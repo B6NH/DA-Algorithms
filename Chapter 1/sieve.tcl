@@ -87,11 +87,79 @@ proc sieve {n} {
 
 }
 
+# Find all common elements in two sorted lists
+proc commonElements {list1 list2} {
+
+  set index1 0 ; set index2 0
+  set len1 [llength $list1] ; set len2 [llength $list2]
+  set result {}
+
+  while {$index1 < $len1 && $index2 < $len2} {
+
+    set el1 [lindex $list1 $index1] ; set el2 [lindex $list2 $index2]
+
+    # Increment both indices
+    if {$el1 == $el2} {
+      lappend result $el1
+      incr index1 ; incr index2
+
+    # Increment index with smaller value
+    } else {
+      incr index[expr {$el1 < $el2 ? 1 : 2}]
+    }
+
+  }
+
+  return $result
+
+}
+
+
+proc lockerDoors {n} {
+
+  set lockers {}
+
+  # Create n lockers
+  for {set i 0} {$i < $n} {incr i} {
+
+    # All lockers are initially closed
+    lappend lockers 0
+
+  }
+
+  # Make n passes by the lockers
+  for {set i 0} {$i < $n} {incr i} {
+
+    # Toggle door every 'step' lockers
+    set step [expr {$i+1}]
+
+    # Always start with first locker
+    set index 0
+
+    # Index must be smaller than list size
+    while {$index < $n} {
+
+      # Toggle locker
+      lset lockers $index [expr {[lindex $lockers $index] == 0 ? 1 : 0}]
+
+      # Go to next locker
+      incr index $step
+
+    }
+
+  }
+
+  return $lockers
+
+}
 
 # Constants
 set nums {1892324 918232}
 set divisor 532
 set sieveLimit 50
+set elements1 {2 5 5 5}
+set elements2 {2 2 3 5 5 7}
+set commonElementsResult {2 5 5}
 
 # Collect results
 lappend results\
@@ -100,5 +168,9 @@ lappend results\
   [gcdC {*}$nums]
 
 # Test functions
-puts [expr {[checkSieve [sieve $sieveLimit]] &&\
-            [checkResults $divisor $results]}]
+puts "Tests: [expr {[checkSieve [sieve $sieveLimit]] &&\
+             [checkResults $divisor $results] &&\
+             [expr {[commonElements $elements1 $elements2] ==\
+                    $commonElementsResult}]}]"
+
+puts "Lockers: [lockerDoors 5]"
